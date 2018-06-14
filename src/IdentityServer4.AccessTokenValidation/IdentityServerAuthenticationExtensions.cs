@@ -48,24 +48,35 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="authenticationScheme">The authentication scheme.</param>
         /// <param name="configureOptions">The configure options.</param>
         /// <returns></returns>
-        public static AuthenticationBuilder AddIdentityServerAuthentication(this AuthenticationBuilder builder, string authenticationScheme, Action<IdentityServerAuthenticationOptions> configureOptions)
+        public static AuthenticationBuilder AddIdentityServerAuthentication(
+				this AuthenticationBuilder builder, 
+				string authenticationScheme, 
+				Action<IdentityServerAuthenticationOptions> configureOptions
+			)
         {
             builder.AddJwtBearer(authenticationScheme + IdentityServerAuthenticationDefaults.JwtAuthenticationScheme, configureOptions: null);
             builder.AddOAuth2Introspection(authenticationScheme + IdentityServerAuthenticationDefaults.IntrospectionAuthenticationScheme, configureOptions: null);
 
-            builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>>(services =>
-            {
-                var monitor = services.GetRequiredService<IOptionsMonitor<IdentityServerAuthenticationOptions>>();
-                return new ConfigureInternalOptions(monitor.Get(authenticationScheme), authenticationScheme);
-            });
+            builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>>(
+				services =>
+				{
+					var monitor = services.GetRequiredService<IOptionsMonitor<IdentityServerAuthenticationOptions>>();
+					return new ConfigureInternalOptions(monitor.Get(authenticationScheme), authenticationScheme);
+				}
+			);
             
-            builder.Services.AddSingleton<IConfigureOptions<OAuth2IntrospectionOptions>>(services =>
-            {
-                var monitor = services.GetRequiredService<IOptionsMonitor<IdentityServerAuthenticationOptions>>();
-                return new ConfigureInternalOptions(monitor.Get(authenticationScheme), authenticationScheme);
-            });
+            builder.Services.AddSingleton<IConfigureOptions<OAuth2IntrospectionOptions>>(
+				services =>
+				{
+					var monitor = services.GetRequiredService<IOptionsMonitor<IdentityServerAuthenticationOptions>>();
+					return new ConfigureInternalOptions(monitor.Get(authenticationScheme), authenticationScheme);
+				}
+			);
             
-            return builder.AddScheme<IdentityServerAuthenticationOptions, IdentityServerAuthenticationHandler>(authenticationScheme, configureOptions);
+            return builder.AddScheme<IdentityServerAuthenticationOptions, IdentityServerAuthenticationHandler>(
+					authenticationScheme, 
+					configureOptions
+				);
         }
 
         /// <summary>
